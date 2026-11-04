@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestros 3 Años Juntos ❤️</title>
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- JS Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #d63384;
+            --primary-dark: #a81d61;
+            --rose-gold: #e8a598;
+            --gold: #d4af37;
+            --bg-gradient: linear-gradient(135deg, #fff0f3 0%, #ffccd5 50%, #fff0f3 100%);
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --text-color: #4a2c3a;
+            --shadow: 0 12px 35px rgba(214, 51, 132, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Canvas de corazones de fondo */
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* REPRODUCTOR FLOTANTE DE MÚSICA */
+        .music-player-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: 2px solid white;
+            border-radius: 30px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.4);
+            z-index: 99;
+            transition: transform 0.3s ease;
+        }
+
+        .music-player-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .music-disc {
+            display: inline-block;
+            animation: spin 3s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .music-disc.playing {
+            animation-play-state: running;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Layout */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 25px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-top: 10px;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.8rem;
+            color: var(--primary);
+            text-shadow: 2px 3px 6px rgba(0,0,0,0.06);
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: #7a4b60;
+            margin-top: 5px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+        }
+
+        /* Contador de Tiempo */
+        .timer-container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 35px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .timer-title {
+            font-size: 0.95rem;
+            color: var(--primary-dark);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .timer-box {
+            background: linear-gradient(180deg, #ffffff 0%, #fff5f8 100%);
+            padding: 16px 10px;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+            border: 1px solid #ffe3ec;
+        }
+
+        .timer-box .num {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .timer-box .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9e6b82;
+            margin-top: 3px;
+        }
+
+        /* Navegación por pestañas */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: white;
+            border: 2px solid var(--rose-gold);
+            color: var(--primary-dark);
+            padding: 12px 26px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            font-size: 1rem;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- LÍNEA DE TIEMPO / SOBRES POLAROID --- */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--rose-gold) 0%, var(--primary) 100%);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            margin-bottom: 50px;
+            position: relative;
+            width: 50%;
+            padding: 0 30px;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            text-align: left;
+        }
+
+        .timeline-dot {
+            width: 22px;
+            height: 22px;
+            background: var(--primary);
+            border: 4px solid white;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            box-shadow: 0 0 12px rgba(214, 51, 132, 0.6);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-dot { right: -11px; }
+        .timeline-item:nth-child(even) .timeline-dot { left: -11px; }
+
+        .envelope-card {
+            background: linear-gradient(145deg, #ffffff 0%, #fff5f8 100%);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 340px;
+            border: 2px solid #ffe3ec;
+        }
+
+        .envelope-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(214, 51, 132, 0.25);
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--primary-dark);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 2px solid #fff;
+        }
+
+        .envelope-icon {
+            font-size: 2.6rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .envelope-date {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .envelope-title {
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-top: 4px;
+            color: var(--text-color);
+        }
+
+        /* Modal / Pop-up de Carta y Foto */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(45, 20, 32, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 24px;
+            max-width: 480px;
+            width: 100%;
+            padding: 30px 25px;
+            position: relative;
+            animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        @keyframes popUp {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover { color: var(--primary); }
+
+        .polaroid {
+            background: white;
+            padding: 14px 14px 30px 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transform: rotate(-2deg);
+            margin: 20px auto;
+            max-width: 290px;
+            border: 1px solid #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .letter-text {
+            font-family: 'Caveat', cursive;
+            font-size: 1.6rem;
+            color: #4a2c3a;
+            line-height: 1.4;
+            margin-top: 15px;
+            text-align: left;
+            background: #fffdf7;
+            padding: 18px;
+            border-radius: 12px;
+            border-left: 4px solid var(--rose-gold);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+        }
+
+        /* --- PESTAÑA: CANJEA TU CITA --- */
+        .dates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 22px;
+        }
+
+        .date-card {
+            background: white;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #ffe8f0;
+        }
+
+        .date-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .date-icon {
+            font-size: 3.2rem;
+            margin-bottom: 12px;
+        }
+
+        .date-title {
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+
+        .date-desc {
+            font-size: 0.88rem;
+            color: #7a5c6d;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--rose-gold) 0%, var(--primary) 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(214, 51, 132, 0.2);
+        }
+
+        .btn-add:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(214, 51, 132, 0.35);
+        }
+
+        /* Carrito Flotante / Ticket */
+        .cart-section {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-top: 35px;
+            border: 2px solid #ffe3ec;
+        }
+
+        .cart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-items {
+            list-style: none;
+            margin-bottom: 18px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #ffd5e5;
+            font-size: 0.95rem;
+        }
+
+        .cart-total {
+            font-weight: 600;
+            text-align: right;
+            margin-bottom: 18px;
+            color: #4a2c3a;
+            font-size: 1.05rem;
+        }
+
+        .btn-checkout {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 30px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.35);
+            transition: transform 0.2s;
+        }
+
+        .btn-checkout:hover { transform: scale(1.01); }
+
+        .voucher {
+            display: none;
+            background: #fffdf5;
+            border: 2px dashed var(--primary);
+            border-radius: 18px;
+            padding: 25px;
+            margin-top: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .voucher h3 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        /* --- PESTAÑA: CARTA DE AMOR Y JUEGO INTERACTIVO --- */
+        .final-love-letter {
+            background: #fffdf8;
+            border-radius: 24px;
+            padding: 45px 35px;
+            box-shadow: var(--shadow);
+            border: 2px dashed #f2b8c6;
+            position: relative;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .final-love-letter h2 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.2rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .final-love-letter .letter-body {
+            font-family: 'Caveat', cursive;
+            font-size: 1.85rem;
+            color: #4a2c3a;
+            line-height: 1.65;
+            white-space: pre-line;
+            text-align: left;
+        }
+
+        .letter-signature {
+            margin-top: 30px;
+            text-align: right;
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.4rem;
+            color: var(--primary);
+            margin-bottom: 40px;
+        }
+
+        .happiness-box {
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4ec 100%);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            border: 2px solid #ffd1dc;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .happiness-box h3 {
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            margin-bottom: 22px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .buttons-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            min-height: 80px;
+            position: relative;
+        }
+
+        .btn-yes {
+            background: #2ec4b6;
+            color: white;
+            border: none;
+            padding: 14px 38px;
+            border-radius: 30px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 18px rgba(46, 196, 182, 0.4);
+            z-index: 10;
+        }
+
+        .btn-no {
+            background: #e63946;
+            color: white;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 30px;
+            font-size: 1.0rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.3);
+            z-index: 5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .timeline::before { left: 20px; }
+            .timeline-item { width: 100%; padding-left: 50px; padding-right: 0; text-align: left !important; }
+            .timeline-item:nth-child(even) { left: 0; }
+            .timeline-dot { left: 9px !important; }
+            .timer-grid { grid-template-columns: repeat(2, 1fr); }
+            h1 { font-size: 3rem; }
+            .final-love-letter { padding: 30px 20px; }
+            .music-player-btn { top: 10px; right: 10px; padding: 8px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ELEMENTO DE AUDIO APUNTANDO A TU ARCHIVO LOCAL -->
+    <audio id="bgMusic" loop>
+        <source src="cancion.mp3" type="audio/mpeg">
+    </audio>
+
+    <button class="music-player-btn" onclick="toggleMusic()">
+        <span class="music-disc" id="musicDisc">💿</span>
+        <span id="musicText">La Melodía de Dios 🎵</span>
+    </button>
+
+    <canvas id="heartCanvas"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>Feliz Aniversario amor</h1>
+            <p class="subtitle">3 Años de momentos inolvidables juntos ❤️</p>
+        </header>
+
+        <!-- Contador de Tiempo -->
+        <div class="timer-container">
+            <div class="timer-title">Llevamos juntos exactamente:</div>
+            <div class="timer-grid">
+                <div class="timer-box"><div class="num" id="days">0</div><div class="label">Días</div></div>
+                <div class="timer-box"><div class="num" id="hours">0</div><div class="label">Horas</div></div>
+                <div class="timer-box"><div class="num" id="minutes">0</div><div class="label">Minutos</div></div>
+                <div class="timer-box"><div class="num" id="seconds">0</div><div class="label">Segundos</div></div>
+            </div>
+        </div>
+
+        <!-- Navegación por pestañas -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('timelineTab', this)">📬 Nuestra Historia</button>
+            <button class="tab-btn" onclick="switchTab('datesTab', this)">🎟️ Canjea tu Cita</button>
+            <button class="tab-btn" onclick="switchTab('letterTab', this)">💌 Carta de Amor</button>
+        </div>
+
+        <!-- Pestaña 1: Línea de Tiempo de Sobres -->
+        <div id="timelineTab" class="tab-content active">
+            <div class="timeline" id="timelineContainer"></div>
+        </div>
+
+        <!-- Pestaña 2: Canjea tu Cita -->
+        <div id="datesTab" class="tab-content">
+            <div class="dates-grid" id="datesGrid"></div>
+            <div class="cart-section">
+                <div class="cart-title"><span>🛒</span> Tus Citas Seleccionadas</div>
+                <ul class="cart-items" id="cartItems">
+                    <li style="color: #888; font-size: 0.9rem;">Aún no has agregado ninguna cita. ¡Elige las que quieras!</li>
+                </ul>
+                <div class="cart-total">Total: <span id="cartTotal" style="color: var(--primary);">0 Besos y Abrazos</span></div>
+                <button class="btn-checkout" onclick="checkoutDates()">🎟️ Confirmar y Canjear Citas</button>
+                <div class="voucher" id="voucher">
+                    <h3>¡Vale Oficial de Citas! 💌</h3>
+                    <p>Has canjeado exitosamente tus citas especiales.</p>
+                    <p style="margin-top: 12px; font-weight: bold; color: var(--primary-dark); font-size: 1.1rem;" id="voucherSummary"></p>
+                    <small style="display:block; margin-top: 15px; color: #888;">¡Sácale una captura a esto y envíaselo por WhatsApp! 😉</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña 3: Carta Final de Amor + Juego Interactivo -->
+        <div id="letterTab" class="tab-content">
+            <div class="final-love-letter">
+                <h2>Para el amor de mi vida...</h2>
+                <div class="letter-body">Mi amor,
+
+Estamos cumpliendo 3 años ya amor me parece una locura llevar tanto tiempo juntos amor. Me encanta seguir pensando en nosotros
+
+y poder vernos a futuro mi amor hoy en un año mas que se cumple, un año mas aguantadome, un año mas teniendo mi hogar y lugar seguro
+
+en mi vida. Te amo demasiado amor y mi amor por vos durara toda la vida, hoy es un pasito mas a estar mas juntos que nunca. Pronto en un 
+
+futuro no tan lejano estaremos casandonos y viviendo un momento tan esperado por nosotros, Gracias por el amor maravilloso que me das 
+
+los dias, gracias por todo mi amor, sos el amor de mi vida. Te amo mucho y te dejo con la sorpresita del final jijiji. MUAK LUCAS   . ❤️</div>
+                <div class="letter-signature">Con todo mi amor siempre</div>
+
+                <!-- PREGUNTA INTERACTIVA AL FINAL DE LA CARTA -->
+                <div class="happiness-box">
+                    <h3>¿Queres abrir tu sorpresita? 🥰</h3>
+                    <div class="buttons-wrapper">
+                        <button class="btn-yes" id="btnYes" onclick="onYesClick()">¡SÍ, MUCHO! ❤️</button>
+                        <button class="btn-no" id="btnNo" onclick="onNoClick()">No 😜</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver la Carta y Foto -->
+    <div class="modal" id="letterModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle" style="color: var(--primary); font-size: 1.6rem; font-family: 'Playfair Display', serif;"></h3>
+            <span id="modalDate" style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px;"></span>
+            <div class="polaroid">
+                <img id="modalImg" src="" alt="Recuerdo">
+            </div>
+            <div class="letter-text" id="modalText"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ----------------------------------------------------
+           0. CONTROL DE MÚSICA LOCAL (cancion.mp3)
+        ---------------------------------------------------- */
+        const bgMusic = document.getElementById('bgMusic');
+        const musicDisc = document.getElementById('musicDisc');
+        const musicText = document.getElementById('musicText');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicDisc.classList.remove('playing');
+                musicText.innerText = "La Melodía de Dios 🎵";
+                isPlaying = false;
+            } else {
+                bgMusic.play().then(() => {
+                    musicDisc.classList.add('playing');
+                    musicText.innerText = "Pausar Música ⏸️";
+                    isPlaying = true;
+                }).catch(err => {
+                    alert("Asegúrate de tener el archivo 'cancion.mp3' guardado en la misma carpeta.");
+                });
+            }
+        }
+
+        /* ----------------------------------------------------
+           1. CONFIGURACIÓN DE FECHA DE INICIO
+        ---------------------------------------------------- */
+        const startDate = new Date('2023-11-04T00:00:00'); 
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('days').innerText = days;
+            document.getElementById('hours').innerText = hours;
+            document.getElementById('minutes').innerText = minutes;
+            document.getElementById('seconds').innerText = seconds;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        /* ----------------------------------------------------
+           2. DATOS DE LOS SOBRES (NUESTRA HISTORIA)
+        ---------------------------------------------------- */
+        let momentsData = [
+            {
+                date: "El Comienzo",
+                title: "Nuestra primera foto y primer beshito",
+                icon: "💌",
+                img: "img/primer.jpg",
+                text: "El día en que todo empezó. Ese dia me acuerdo que fue de nervios y perseguidas por si alguien nos descubria."
+            },
+            {
+                date: "El dia que comenzo una hermosa aventura",
+                title: "Dia muy especial",
+                icon: "💌",
+                img: "img/aniver2023.jpg",
+                text: "Aqui fue el 4 de noviembre del 2023 donde fui a tu casita por primera vez una locura para mi en ese momento amor"
+            },
+            {
+                date: "Nuestro primer aniversario",
+                title: "Creciendo Juntos",
+                icon: "💌",
+                img: "img/anover2024.jpg",
+                text: "La foto es del 6 de Octubre del 2024, es la mas cercana a esta fecha porque no tengo de noviembre :(. Pero fue un año muy maravilloso y llenisimo de amor )"
+            },
+            {
+                date: "Nuestro segundo aniversario",
+                title: "Mañana un poco mas",
+                icon: "💌",
+                img: "img/aniver2025.jpg",
+                text: "Aqui llego nuestro segundo aniversario con mucho amor y mimos, cada dia a tu lado es muy especial"
+            }
+        ];
+
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = '';
+            momentsData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'timeline-item';
+                div.innerHTML = `
+                    <div class="timeline-dot"></div>
+                    <div class="envelope-card" onclick="openModal(${index})">
+                        <div class="wax-seal">♥</div>
+                        <span class="envelope-icon">${item.icon}</span>
+                        <div class="envelope-date">${item.date}</div>
+                        <div class="envelope-title">${item.title}</div>
+                        <small style="color: var(--primary); font-weight: 600; display: block; margin-top: 10px;">Toca para abrir sobre ✉️</small>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        renderTimeline();
+
+        function openModal(index) {
+            const data = momentsData[index];
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalDate').innerText = data.date;
+            document.getElementById('modalImg').src = data.img;
+            document.getElementById('modalText').innerText = data.text;
+            document.getElementById('letterModal').style.display = 'flex';
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+        }
+
+        function closeModal() {
+            document.getElementById('letterModal').style.display = 'none';
+        }
+
+        /* ----------------------------------------------------
+           3. JUEGO DEL BOTÓN "NO" POR CLICS (EN LA CARTA)
+        ---------------------------------------------------- */
+        let yesScale = 1;
+        let noClickCount = 0;
+        const noMessages = [
+            "No 😜", "¿Segura? 🤔", "Pénsalo de nuevo... 💭", 
+            "¡Esa opción no vale! 🚫", "¡Te equivocaste de botón! 🙈", 
+            "¡Se te escapó el clic! 😂", "¡Vuelve a intentar! 💖", "¡SÍ O SÍ! 🥰"
+        ];
+
+        function onNoClick() {
+            noClickCount++;
+            yesScale += 0.35;
+            document.getElementById('btnYes').style.transform = `scale(${yesScale})`;
+            const btnNo = document.getElementById('btnNo');
+            btnNo.innerText = noMessages[Math.min(noClickCount, noMessages.length - 1)];
+            if (yesScale > 3) {
+                btnNo.style.position = 'absolute';
+                btnNo.style.opacity = '0.2';
+            }
+        }
+
+        function onYesClick() {
+            confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
+            alert("TU YEGALITO SON UNAS PUNTAS PARA MI BAILARINA FAVORITA OSEA VOS UWU-YA ESTA TODO HECHO PARA QUE LLEGUEN JIJIJI ❤️");
+        }
+
+        /* ----------------------------------------------------
+           4. PESTAÑA CANJEA TU CITA (CARRITO)
+        ---------------------------------------------------- */
+        const availableDates = [
+            { id: 1, title: "Noche de Pochoclos & Pelis", icon: "🍿", desc: "Vos elegís la película y yo preparo las cosas ricas." },
+            { id: 2, title: "Picnic al Aire Libre", icon: "🧺", desc: "Tarde tranquila en un parque con cositas ricas para comer y tomar mate." },
+            { id: 3, title: "Cena Romántica de Sushi", icon: "🍣", desc: "Noche especial disfrutando de tu comida favorita juntos." },
+            { id: 4, title: "Sesión de Masajes Relax", icon: "💆‍♀️", desc: "30 minutos de masajes relajantes garantizados para consentirte." },
+            { id: 5, title: "Escapada / Viajecito", icon: "🚗", desc: "Un fin de semana para salir de la rutina y explorar un lugar nuevo." },
+            { id: 6, title: "Ir a merendar a un lugar rico", icon: "☕", desc: "Te invito a merendar a donde quieras amor." }
+        ];
+
+        let cart = [];
+
+        function renderDates() {
+            const grid = document.getElementById('datesGrid');
+            grid.innerHTML = '';
+            availableDates.forEach(d => {
+                const card = document.createElement('div');
+                card.className = 'date-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="date-icon">${d.icon}</div>
+                        <div class="date-title">${d.title}</div>
+                        <div class="date-desc">${d.desc}</div>
+                    </div>
+                    <button class="btn-add" onclick="addToCart(${d.id})">+ Agregar Cita</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        renderDates();
+
+        function addToCart(id) {
+            cart.push(availableDates.find(d => d.id === id));
+            updateCartUI();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItems');
+            if (cart.length === 0) {
+                container.innerHTML = `<li style="color: #888; font-size: 0.9rem;">Aún no has agregado ninguna cita. ¡Elige las que quieras!</li>`;
+                document.getElementById('cartTotal').innerText = `0 Besos y Abrazos`;
+                return;
+            }
+            container.innerHTML = '';
+            cart.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <span>${item.icon} ${item.title}</span>
+                    <button style="background:none; border:none; color:red; cursor:pointer; font-size: 1.1rem;" onclick="removeFromCart(${index})">❌</button>
+                `;
+                container.appendChild(li);
+            });
+            document.getElementById('cartTotal').innerText = `${cart.length * 100} Besos + Abrazos Incondicionales`;
+        }
+
+        function checkoutDates() {
+            if (cart.length === 0) {
+                alert("¡Agrega al menos una cita a tu carrito primero!");
+                return;
+            }
+            const voucher = document.getElementById('voucher');
+            document.getElementById('voucherSummary').innerHTML = cart.map(c => `${c.icon} ${c.title}`).join('<br>');
+            voucher.style.display = 'block';
+            confetti({ particleCount: 200, spread: 120, origin: { y: 0.7 } });
+        }
+
+        /* ----------------------------------------------------
+           5. NAVEGACIÓN
+        ---------------------------------------------------- */
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        /* ----------------------------------------------------
+           6. EFECTO CORAZONES
+        ---------------------------------------------------- */
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        let hearts = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Heart {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 15 + 10;
+                this.speedY = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) {
+                    this.y = canvas.height + 20;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#d63384';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size / 2, 0, Math.PI, true);
+                ctx.arc(this.x + this.size / 2, this.y, this.size / 2, 0, Math.PI, true);
+                ctx.lineTo(this.x + this.size / 4, this.y + this.size);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 25; i++) hearts.push(new Heart());
+
+        function animateHearts() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(h => { h.update(); h.draw(); });
+            requestAnimationFrame(animateHearts);
+        }
+        animateHearts();
+    </script>
+</body>
+</html>
